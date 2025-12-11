@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PANAHON — Weather App</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <link rel="stylesheet" href="WEB101.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header with search -->
+    <header class="header">
+      <h1 class="app-title">PANAHON</h1>
+      <div class="search-box">
+        <div class="input-wrap">
+          <span class="material-symbols-outlined search-icon">search</span>
+          <input autocomplete="off" type="text" id="city" placeholder="Search cities, towns..." aria-label="City name">
+          <div id="suggestions" class="suggestions" role="listbox"></div>
+        </div>
+        <button id="searchBtn" class="search-btn">Search</button>
+      </div>
+    </header>
+
+    <!-- Main weather display -->
+    <main class="weather-main">
+      <!-- Current weather card -->
+      <section class="current-weather" id="currentWeather" style="display:none;">
+        <div class="weather-hero">
+          <div class="weather-condition">
+            <span class="weather-icon" id="weatherIcon">⛅</span>
+            <div class="temp-main">
+              <div class="temperature" id="temp">--°C</div>
+              <div class="condition-desc" id="description">--</div>
+            </div>
+          </div>
+          <div class="location-info">
+            <h2 class="city-name" id="cityName">--</h2>
+            <p class="timestamp" id="timestamp">--</p>
+          </div>
+        </div>
+
+        <!-- Key stats grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-icon">💧</span>
+            <div class="stat-content">
+              <span class="stat-label">Humidity</span>
+              <span class="stat-value" id="humidity">--%</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">💨</span>
+            <div class="stat-content">
+              <span class="stat-label">Wind Speed</span>
+              <span class="stat-value" id="windSpeed">-- m/s</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">🌡️</span>
+            <div class="stat-content">
+              <span class="stat-label">Feels Like</span>
+              <span class="stat-value" id="feelsLike">--°C</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">⚖️</span>
+            <div class="stat-content">
+              <span class="stat-label">Pressure</span>
+              <span class="stat-value" id="pressure">-- hPa</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5-Day Forecast -->
+      <section class="forecast-section" id="forecastSection" style="display:none;">
+        <h3 class="section-title">5-Day Forecast</h3>
+        <div class="forecast-grid" id="forecastGrid">
+          <!-- populated by JS -->
+        </div>
+      </section>
+
+      <!-- Hourly Forecast -->
+      <section class="hourly-section" id="hourlySection" style="display:none;">
+        <h3 class="section-title">Hourly Forecast (Next 12 Hours)</h3>
+        <div class="hourly-scroll" id="hourlyScroll">
+          <!-- populated by JS -->
+        </div>
+      </section>
+
+      <!-- Sunrise/Sunset + Air Quality -->
+      <section class="info-grid" id="infoGrid" style="display:none;">
+        <div class="info-card sunrise-card">
+          <h4>Sunrise & Sunset</h4>
+          <div class="sunrise-info">
+            <div class="time-row">
+              <span class="time-label">🌅 Sunrise</span>
+              <span class="time-value" id="sunrise">--:--</span>
+            </div>
+            <div class="time-row">
+              <span class="time-label">🌇 Sunset</span>
+              <span class="time-value" id="sunset">--:--</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-card aqi-card">
+          <h4>Air Quality Index</h4>
+          <div class="aqi-content">
+            <div class="aqi-badge" id="aqiBadge">--</div>
+            <p class="aqi-label" id="aqiLabel">Loading...</p>
+          </div>
+        </div>
+
+        <div class="info-card uv-card">
+          <h4>UV Index</h4>
+          <div class="uv-content">
+            <div class="uv-value" id="uvIndex">--</div>
+            <p class="uv-label" id="uvLabel">--</p>
+          </div>
+        </div>
+
+        <div class="info-card visibility-card">
+          <h4>Visibility</h4>
+          <div class="visibility-value" id="visibility">-- km</div>
+        </div>
+      </section>
+
+      <!-- Alerts -->
+      <section class="alerts-section" id="alertsSection" style="display:none;">
+        <h3 class="section-title">⚠️ Alerts & Warnings</h3>
+        <div id="alertsList">
+          <!-- populated by JS -->
+           <!-- Plant & Garden Advisor -->
+<section class="advisor-section" id="plantAdvisor" style="display:none;">
+  <h3 class="section-title">🌿 Plant & Garden Advisory</h3>
+  <p id="plantAdviceText">Loading...</p>
+</section>
+
+<!-- Hazard Safety Score -->
+<section class="hazard-section" id="hazardSection" style="display:none;">
+  <h3 class="section-title">⚠️ Hazard Risk</h3>
+  <div id="hazardScoreDisplay" class="hazard-score">--/10</div>
+  <p id="hazardDescription">--</p>
+</section>
+
+<!-- AQ Health Advisory -->
+<section class="health-section" id="healthSection" style="display:none;">
+  <h3 class="section-title">🏥 Health Recommendation</h3>
+  <p id="healthAdviceText">--</p>
+</section>
+        </div>
+      </section>
+    </main>
+
+    <!-- Loading state -->
+    <div class="loading" id="loading" style="display:none;">
+      <span class="spinner"></span>
+      <p>Fetching weather data...</p>
+    </div>
+
+    <!-- Error state -->
+    <div class="error-box" id="errorBox" style="display:none;"></div>
+  </div>
+
+  <script src="WEBS101.js"></script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+:root{
+  --bg1:#071026; --card:#ffffff; --muted:#6b7280; --accent:#667eea; --accent-2:#7c3aed;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  background: linear-gradient(180deg,var(--bg1),#061427 60%); padding:24px; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial; color:#e6eef8;
+  -webkit-font-smoothing:antialiased;
+}
+.app { width:100%; max-width:1100px; margin:0 auto; background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)); border-radius:18px; box-shadow:0 12px 30px rgba(2,6,23,0.45); overflow:hidden; }
+.header{display:flex;align-items:center;padding:22px;border-bottom:1px solid rgba(255,255,255,0.03)}
+.title{font-weight:900;font-size:28px;margin:0}
+.search-row{margin-left:auto;display:flex;gap:10px;align-items:center;width:480px;max-width:60%}
+.input-wrap{position:relative;flex:1}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted)}
+input#city{width:100%;padding:12px 14px 12px 40px;border-radius:10px;border:none;background:rgba(255,255,255,0.04);color:inherit;font-weight:600}
+.btn{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#041025;border:none;padding:10px 14px;border-radius:10px;font-weight:800;cursor:pointer}
+.small-btn{padding:8px 10px;background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.03);border-radius:10px;cursor:pointer;font-weight:700}
+
+.main{display:grid;grid-template-columns:1fr 420px;gap:18px;padding:20px}
+@media (max-width:980px){.main{grid-template-columns:1fr}.search-row{max-width:220px}}
+
+.left-col{display:flex;flex-direction:column;gap:16px}
+.card{background:var(--card);color:#0b1220;border-radius:12px;padding:18px;box-shadow:0 10px 30px rgba(2,6,23,0.08)}
+.current-card{display:flex;gap:18px;align-items:center}
+.weather-icon{width:96px;height:96px;display:flex;align-items:center;justify-content:center;font-size:46px;border-radius:12px;background:rgba(255,255,255,0.02)}
+.temp-block{font-size:44px;font-weight:900}
+.desc{color:var(--muted);font-weight:700;text-transform:capitalize}
+
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:8px}
+.stat{background:linear-gradient(180deg, rgba(0,0,0,0.02), rgba(255,255,255,0.02));padding:12px;border-radius:10px;display:flex;gap:12px;align-items:center}
+.label{color:var(--muted);font-size:13px;font-weight:700}
+.val{font-weight:800;font-size:16px}
+
+.hourly{display:flex;gap:10px;overflow:auto;padding:12px 4px;margin-top:6px}
+.hour{min-width:86px;background:#fff;color:#0b1220;border-radius:10px;padding:8px;text-align:center;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
+.hour .time{font-size:12px;color:var(--muted);font-weight:700}
+.hour .t{font-weight:900;font-size:16px;margin-top:4px}
+
+.right-col{display:flex;flex-direction:column;gap:12px}
+.forecast-grid{display:grid;grid-template-columns:repeat(1,1fr);gap:10px}
+@media (min-width:560px){.forecast-grid{grid-template-columns:repeat(2,1fr)}}
+.forecast-card{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;background:#fff;color:#0b1220;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
+.forecast-card .icon{width:48px;text-align:center;font-size:26px}
+.forecast-card .meta{flex:1}
+.forecast-card .day{font-weight:800}
+.forecast-card .range{color:#666;font-size:13px}
+
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.info-grid{grid-template-columns:1fr}}
+.info-card{padding:12px;border-radius:10px;background:#fff;color:#0b1220;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
+
+.alerts-list{display:flex;flex-direction:column;gap:8px}
+.alert-item{background:linear-gradient(90deg, rgba(255,240,240,0.95), rgba(255,240,240,0.95));color:#7f1d1d;padding:10px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.04)}
+.aqi-badge{width:64px;height:64px;border-radius:999px;background:linear-gradient(90deg,#ecfdf5,#dcfce7);display:flex;align-items:center;justify-content:center;font-weight:900}
+
+.credits{padding:12px 18px;color:var(--muted);font-size:13px;text-align:center}
+.hidden{display:none !important}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader{width:32px;height:32px;border:4px solid rgba(255,255,255,0.1);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto}
