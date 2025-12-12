@@ -1,106 +1,199 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PANAHON — Weather App</title>
-
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-  <link rel="stylesheet" href="new1.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <link rel="stylesheet" href="WEB101.css" />
 </head>
+
 <body>
-  <div class="app" role="application">
-    <header class="header" role="banner">
-      <h1 class="title">PANAHON</h1>
-      <div class="search-row" role="search">
+  <div class="app-container">
+
+    <!-- HEADER ------------------------------------------------------>
+    <header class="header">
+      <h1 class="app-title">PANAHON</h1>
+
+      <div class="search-box">
         <div class="input-wrap">
-          <span class="search-icon">🔍</span>
-          <input id="city" type="text" placeholder="Iligan, PH or Manila" aria-label="Search city" autocomplete="off" />
+          <span class="material-symbols-outlined search-icon">search</span>
+          <input autocomplete="off" type="text" id="city" placeholder="Search cities, towns..." aria-label="City name">
           <div id="suggestions" class="suggestions" role="listbox"></div>
         </div>
-        <button id="searchBtn" class="btn">Search</button>
-        <button id="useLocationBtn" class="small-btn">📍</button>
+        <button id="searchBtn" class="search-btn">Search</button>
+      </div>
+
+      <div style="margin-top: 12px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+        <button id="useLocationBtn" class="use-location-btn" type="button">
+          <span class="material-symbols-outlined">my_location</span> Use my location
+        </button>
+
+        <div id="pollenDisplay" style="display:none;"></div>
+        <div id="asthmaFlag" style="display:none;"></div>
+        <div id="hazardScoreDisplay" style="display:none;"></div>
       </div>
     </header>
 
-    <div class="main">
-      <div class="left-col">
-        <div id="currentWeather" class="card current-card hidden">
-          <div class="weather-icon" id="weatherIconWrap"><img id="weatherIcon" src="" alt=""></div>
-          <div style="flex:1">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start">
-              <div>
-                <div id="temp" class="temp-block">--°C</div>
-                <div id="description" class="desc">--</div>
-              </div>
-              <div style="text-align:right;color:var(--muted)">
-                <div id="cityName" style="font-weight:800">--</div>
-                <div id="timestamp" style="font-size:13px">--</div>
-              </div>
+    <!-- MAIN WEATHER AREA ------------------------------------------->
+    <main class="weather-main">
+
+      <!-- CURRENT WEATHER -->
+      <section class="current-weather" id="currentWeather" style="display:none;">
+        <div class="weather-hero">
+          <div class="weather-condition">
+            <span class="weather-icon" id="weatherIcon">⛅</span>
+            <div class="temp-main">
+              <div class="temperature" id="temp">26°C</div>
+              <div class="condition-desc" id="description">Partly Cloudy</div>
             </div>
-            <div class="stats-grid">
-              <div class="stat"><div>💧</div><div><div class="label">Humidity</div><div class="val" id="humidity">--%</div></div></div>
-              <div class="stat"><div>💨</div><div><div class="label">Wind</div><div class="val" id="windSpeed">--</div></div></div>
-              <div class="stat"><div>🌡️</div><div><div class="label">Feels like</div><div class="val" id="feelsLike">--</div></div></div>
-              <div class="stat"><div>⚖️</div><div><div class="label">Pressure</div><div class="val" id="pressure">--</div></div></div>
+          </div>
+
+          <div class="location-info">
+            <h2 class="city-name" id="cityName">Manila, PH</h2>
+            <p class="timestamp" id="timestamp">Dec 12, 2025 — 10:00 AM</p>
+          </div>
+        </div>
+
+        <!-- CURRENT WEATHER STATS CARD -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-icon">💧</span>
+            <div class="stat-content">
+              <span class="stat-label">Humidity</span>
+              <span class="stat-value" id="humidity">68%</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <span class="stat-icon">💨</span>
+            <div class="stat-content">
+              <span class="stat-label">Wind Speed</span>
+              <span class="stat-value" id="windSpeed">4.2 m/s</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <span class="stat-icon">🌡️</span>
+            <div class="stat-content">
+              <span class="stat-label">Feels Like</span>
+              <span class="stat-value" id="feelsLike">27°C</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <span class="stat-icon">⚖️</span>
+            <div class="stat-content">
+              <span class="stat-label">Pressure</span>
+              <span class="stat-value" id="pressure">1013 hPa</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5-DAY FORECAST -->
+      <section class="forecast-section" id="forecastSection" style="display:none;">
+        <h3 class="section-title">5-Day Forecast</h3>
+        <div class="forecast-grid" id="forecastGrid"></div>
+      </section>
+
+      <!-- HOURLY FORECAST -->
+      <section class="hourly-section" id="hourlySection" style="display:none;">
+        <h3 class="section-title">Hourly Forecast (Next 12 Hours)</h3>
+        <div class="hourly-scroll" id="hourlyScroll"></div>
+      </section>
+
+      <!-- INFO GRID (Sunrise / AQI / UV / Visibility) -->
+      <section class="info-grid" id="infoGrid" style="display:none;">
+
+        <!-- Sunrise -->
+        <div class="info-card sunrise-card">
+          <h4>Sunrise & Sunset</h4>
+          <div class="sunrise-info">
+            <div class="time-row">
+              <span class="time-label">🌅 Sunrise</span>
+              <span class="time-value" id="sunrise">05:20</span>
+            </div>
+            <div class="time-row">
+              <span class="time-label">🌇 Sunset</span>
+              <span class="time-value" id="sunset">17:45</span>
             </div>
           </div>
         </div>
 
-        <div id="hourlySection" class="card hidden">
-          <h3 style="margin:0 0 8px 0">Hourly (next 12 hrs)</h3>
-          <div id="hourlyScroll" class="hourly"></div>
-        </div>
+        <!-- AQI / UV / VISIBILITY -->
+        <section class="hazard-section" id="hazardSection">
 
-        <div id="loading" class="card" style="display:none; text-align:center">
-          <div style="padding:24px 6px">
-            <div style="width:46px;height:46px;border:4px solid rgba(0,0,0,0.08);border-top-color:var(--accent);border-radius:50%;margin:0 auto; animation:spin 1s linear infinite"></div>
-            <p style="color:var(--muted); margin-top:10px">Fetching weather data…</p>
+          <div class="info-card aqi-card">
+            <h4>Air Quality Index</h4>
+            <div class="aqi-content">
+              <div class="aqi-badge" id="aqiBadge">--</div>
+              <p class="aqi-label" id="aqiLabel">Unknown</p>
+            </div>
+            <div class="data-source">
+              <small>Source: <a href="https://openweathermap.org" target="_blank">OpenWeatherMap</a></small>
+            </div>
           </div>
-        </div>
 
-        <div id="errorBox" class="card" style="display:none;color:#7f1d1d"></div>
-      </div>
+          <div class="info-card uv-card">
+            <h4>UV Index</h4>
+            <div class="uv-content">
+              <div class="uv-value" id="uvIndex">--</div>
+              <p class="uv-label" id="uvLabel">Unknown</p>
+            </div>
+          </div>
 
-      <aside class="right-col">
-        <div id="forecastSection" class="card hidden">
-          <h3 style="margin:0 0 10px 0">5-day forecast</h3>
-          <div id="forecastGrid" class="forecast-grid"></div>
-        </div>
+          <div class="info-card visibility-card">
+            <h4>Visibility</h4>
+            <div class="visibility-value" id="visibility">-- km</div>
+          </div>
 
-        <div id="infoGrid" class="info-grid hidden">
-          <div class="info-card"><h4>Sunrise & Sunset</h4><div style="display:flex;justify-content:space-between"><div><div style="color:var(--muted)">🌅 Sunrise</div><div id="sunrise" style="font-weight:800">--:--</div></div><div><div style="color:var(--muted)">🌇 Sunset</div><div id="sunset" style="font-weight:800">--:--</div></div></div></div>
+        </section>
+      </section>
 
-          <div class="info-card"><h4>Air Quality</h4><div style="display:flex;align-items:center;gap:12px"><div id="aqiBadge" class="aqi-badge">--</div><div><div id="aqiLabel" style="font-weight:800">--</div><div id="aqDetails" style="color:var(--muted);font-size:13px">--</div></div></div></div>
+      <!-- LOCALIZED HAZARD SCORE (JS inserts content here automatically) -->
+      <div id="localizedHazard"></div>
 
-          <div class="info-card"><h4>UV Index</h4><div id="uvIndex" style="font-weight:800;font-size:20px">-- <span id="uvLabel" style="font-size:12px;color:var(--muted)">--</span></div></div>
+      <!-- HAZARD RISK PANEL (RENAMED so it no longer conflicts) -->
+      <section class="hazard-section" id="hazardRiskSection">
+        <h3 class="section-title">⚠️ Hazard Risk</h3>
+        <div id="hazardScoreDisplay" class="hazard-score"></div>
+        <p id="hazardDescription"></p>
+        <div id="hazardBreakdown"></div>
+      </section>
 
-          <div class="info-card"><h4>Visibility</h4><div id="visibility" style="font-weight:800">-- km</div></div>
-        </div>
+      <!-- ALERTS -->
+      <section class="alerts-section" id="alertsSection">
+        <h3 class="section-title">⚠️ Alerts & Warnings</h3>
+        <div id="alertsList"></div>
+      </section>
 
-        <div id="mapCard" class="card" style="padding:8px 8px">
-          <div id="map" style="width:100%;height:220px;border-radius:8px"></div>
-        </div>
+      <!-- PLANT ADVISOR -->
+      <section class="advisor-section" id="plantAdvisor">
+        <h3 class="section-title">🌿 Plant & Garden Advisory</h3>
+        <p id="plantAdviceText"></p>
+      </section>
 
-        <div id="alertsSection" class="card hidden">
-          <h3 style="margin:0 0 10px 0">⚠️ Alerts & Warnings</h3>
-          <div id="alertsList" class="alerts-list"></div>
-        </div>
+      <!-- HEALTH ADVISORY -->
+      <section class="health-section" id="healthSection">
+        <h3 class="section-title">🏥 Health Recommendation</h3>
+        <p id="healthAdviceText"></p>
+        <div id="aqActions"></div>
+      </section>
 
-        <div id="plantAdvisor" class="advisor hidden"><h4>🌿 Plant & Garden Advisor</h4><div id="plantAdviceText" style="color:var(--muted)">--</div></div>
+    </main>
 
-        <div id="hazardSection" class="hazard hidden"><h4>⚠️ Hazard Risk</h4><div id="hazardScoreDisplay" style="font-weight:900;font-size:20px">--/10</div><div id="hazardDescription" style="color:var(--muted)">--</div></div>
-
-        <div id="healthSection" class="health hidden"><h4>🏥 Health Recommendation</h4><div id="healthAdviceText" style="color:var(--muted)">--</div></div>
-      </aside>
+    <!-- Loading -->
+    <div class="loading" id="loading" style="display:none;">
+      <span class="spinner"></span>
+      <p>Fetching weather data...</p>
     </div>
 
-    <div class="credits">Demo • Data: OpenWeatherMap • Map tiles: OpenStreetMap</div>
+    <!-- Error -->
+    <div class="error-box" id="errorBox" style="display:none;"></div>
   </div>
 
-  <!-- Leaflet -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="new2.js"></script>
+  <script src="WEBS101.js"></script>
 </body>
 </html>
+
