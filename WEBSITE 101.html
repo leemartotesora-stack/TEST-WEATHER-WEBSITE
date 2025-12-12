@@ -20,6 +20,12 @@
         </div>
         <button id="searchBtn" class="search-btn">Search</button>
       </div>
+      <div style="margin-top: 12px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+        <button id="useLocationBtn" class="use-location-btn" type="button"><span class="material-symbols-outlined">my_location</span> Use my location</button>
+        <div id="pollenDisplay" style="display: none;"></div>
+        <div id="asthmaFlag" style="display: none;"></div>
+        <div id="hazardScoreDisplay" style="display: none;"></div>
+      </div>
     </header>
 
     <!-- Main weather display -->
@@ -30,13 +36,13 @@
           <div class="weather-condition">
             <span class="weather-icon" id="weatherIcon">⛅</span>
             <div class="temp-main">
-              <div class="temperature" id="temp">--°C</div>
-              <div class="condition-desc" id="description">--</div>
+              <div class="temperature" id="temp">26°C</div>
+              <div class="condition-desc" id="description">Partly Cloudy</div>
             </div>
           </div>
           <div class="location-info">
-            <h2 class="city-name" id="cityName">--</h2>
-            <p class="timestamp" id="timestamp">--</p>
+            <h2 class="city-name" id="cityName">Manila, PH</h2>
+            <p class="timestamp" id="timestamp">Dec 12, 2025 — 10:00 AM</p>
           </div>
         </div>
 
@@ -46,28 +52,28 @@
             <span class="stat-icon">💧</span>
             <div class="stat-content">
               <span class="stat-label">Humidity</span>
-              <span class="stat-value" id="humidity">--%</span>
+              <span class="stat-value" id="humidity">68%</span>
             </div>
           </div>
           <div class="stat-card">
             <span class="stat-icon">💨</span>
             <div class="stat-content">
               <span class="stat-label">Wind Speed</span>
-              <span class="stat-value" id="windSpeed">-- m/s</span>
+              <span class="stat-value" id="windSpeed">4.2 m/s</span>
             </div>
           </div>
           <div class="stat-card">
             <span class="stat-icon">🌡️</span>
             <div class="stat-content">
               <span class="stat-label">Feels Like</span>
-              <span class="stat-value" id="feelsLike">--°C</span>
+              <span class="stat-value" id="feelsLike">27°C</span>
             </div>
           </div>
           <div class="stat-card">
             <span class="stat-icon">⚖️</span>
             <div class="stat-content">
               <span class="stat-label">Pressure</span>
-              <span class="stat-value" id="pressure">-- hPa</span>
+              <span class="stat-value" id="pressure">1013 hPa</span>
             </div>
           </div>
         </div>
@@ -77,7 +83,36 @@
       <section class="forecast-section" id="forecastSection" style="display:none;">
         <h3 class="section-title">5-Day Forecast</h3>
         <div class="forecast-grid" id="forecastGrid">
-          <!-- populated by JS -->
+          <div class="forecast-card">
+            <div class="day">Today</div>
+            <div class="icon">⛅</div>
+            <div class="temps">24° / 30°</div>
+            <div class="desc">Partly Cloudy</div>
+          </div>
+          <div class="forecast-card">
+            <div class="day">Sun</div>
+            <div class="icon">🌧️</div>
+            <div class="temps">23° / 28°</div>
+            <div class="desc">Light Rain</div>
+          </div>
+          <div class="forecast-card">
+            <div class="day">Mon</div>
+            <div class="icon">☀️</div>
+            <div class="temps">25° / 31°</div>
+            <div class="desc">Sunny</div>
+          </div>
+          <div class="forecast-card">
+            <div class="day">Tue</div>
+            <div class="icon">⛅</div>
+            <div class="temps">24° / 29°</div>
+            <div class="desc">Partly Cloudy</div>
+          </div>
+          <div class="forecast-card">
+            <div class="day">Wed</div>
+            <div class="icon">🌦️</div>
+            <div class="temps">22° / 27°</div>
+            <div class="desc">Showers</div>
+          </div>
         </div>
       </section>
 
@@ -85,7 +120,18 @@
       <section class="hourly-section" id="hourlySection" style="display:none;">
         <h3 class="section-title">Hourly Forecast (Next 12 Hours)</h3>
         <div class="hourly-scroll" id="hourlyScroll">
-          <!-- populated by JS -->
+          <div class="hour-item">10:00 — 26°C ⛅</div>
+          <div class="hour-item">11:00 — 27°C ⛅</div>
+          <div class="hour-item">12:00 — 28°C ☀️</div>
+          <div class="hour-item">13:00 — 29°C ☀️</div>
+          <div class="hour-item">14:00 — 29°C ☀️</div>
+          <div class="hour-item">15:00 — 28°C ⛅</div>
+          <div class="hour-item">16:00 — 27°C ⛅</div>
+          <div class="hour-item">17:00 — 26°C 🌤️</div>
+          <div class="hour-item">18:00 — 25°C 🌇</div>
+          <div class="hour-item">19:00 — 24°C 🌙</div>
+          <div class="hour-item">20:00 — 23°C 🌙</div>
+          <div class="hour-item">21:00 — 22°C 🌙</div>
         </div>
       </section>
 
@@ -96,60 +142,80 @@
           <div class="sunrise-info">
             <div class="time-row">
               <span class="time-label">🌅 Sunrise</span>
-              <span class="time-value" id="sunrise">--:--</span>
+              <span class="time-value" id="sunrise">05:20</span>
             </div>
             <div class="time-row">
               <span class="time-label">🌇 Sunset</span>
-              <span class="time-value" id="sunset">--:--</span>
+              <span class="time-value" id="sunset">17:45</span>
             </div>
           </div>
         </div>
-
+<section class="hazard-section" id="hazardSection">
         <div class="info-card aqi-card">
           <h4>Air Quality Index</h4>
           <div class="aqi-content">
-            <div class="aqi-badge" id="aqiBadge">--</div>
-            <p class="aqi-label" id="aqiLabel">Loading...</p>
+            <div class="aqi-badge" id="aqiBadge">42</div>
+            <p class="aqi-label" id="aqiLabel">Good — Low health risk</p>
+          </div>
+          <div class="data-source">
+            <small>Data source: <a href="https://openweathermap.org" target="_blank" rel="noopener">OpenWeatherMap</a></small>
           </div>
         </div>
 
         <div class="info-card uv-card">
           <h4>UV Index</h4>
           <div class="uv-content">
-            <div class="uv-value" id="uvIndex">--</div>
-            <p class="uv-label" id="uvLabel">--</p>
+            <div class="uv-value" id="uvIndex">3</div>
+            <p class="uv-label" id="uvLabel">Moderate — Use sun protection</p>
           </div>
         </div>
 
         <div class="info-card visibility-card">
           <h4>Visibility</h4>
-          <div class="visibility-value" id="visibility">-- km</div>
+          <div class="visibility-value" id="visibility">10 km</div>
         </div>
       </section>
 
       <!-- Alerts -->
-      <section class="alerts-section" id="alertsSection" style="display:none;">
+      <section class="alerts-section" id="alertsSection">
         <h3 class="section-title">⚠️ Alerts & Warnings</h3>
         <div id="alertsList">
-          <!-- populated by JS -->
-           <!-- Plant & Garden Advisor -->
-<section class="advisor-section" id="plantAdvisor" style="display:none;">
-  <h3 class="section-title">🌿 Plant & Garden Advisory</h3>
-  <p id="plantAdviceText">Loading...</p>
-</section>
+          <div class="alert-item"><strong>Flood Watch:</strong> Elevated river levels in low-lying areas; avoid crossing flooded roads.</div>
+          <div class="alert-item"><strong>Air Quality Advisory:</strong> Sensitive groups should limit prolonged outdoor exertion.</div>
+        </div>
+      </section>
 
-<!-- Hazard Safety Score -->
-<section class="hazard-section" id="hazardSection" style="display:none;">
-  <h3 class="section-title">⚠️ Hazard Risk</h3>
-  <div id="hazardScoreDisplay" class="hazard-score">--/10</div>
-  <p id="hazardDescription">--</p>
-</section>
+      <!-- Plant & Garden Advisor -->
+      <section class="advisor-section" id="plantAdvisor">
+        <h3 class="section-title">🌿 Plant & Garden Advisory</h3>
+        <p id="plantAdviceText"><strong>Best watering time:</strong> Early morning or late evening (avoid hottest hours).<br><strong>Humidity:</strong> Moderate (approx 60%).<br><strong>Pest warnings:</strong> Watch for aphids after rainy days.</p>
+      </section>
 
-<!-- AQ Health Advisory -->
-<section class="health-section" id="healthSection" style="display:none;">
-  <h3 class="section-title">🏥 Health Recommendation</h3>
-  <p id="healthAdviceText">--</p>
-</section>
+      <!-- Hazard Safety Score -->
+      <section class="hazard-section" id="hazardSection">
+        <h3 class="section-title">⚠️ Hazard Risk</h3>
+        <div id="hazardScoreDisplay" class="hazard-score">3/10</div>
+        <p id="hazardDescription">Low risk — localized flooding possible in low areas.</p>
+        <div id="hazardBreakdown">
+          <ul style="color:var(--text-secondary);font-size:13px;margin:6px 0 0 18px;">
+            <li>Heat risk: 1/4</li>
+            <li>Rain intensity: 1/3</li>
+            <li>Flood chance: 1/3</li>
+            <li>Wind danger: 0/3</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- AQ Health Advisory -->
+      <section class="health-section" id="healthSection">
+        <h3 class="section-title">🏥 Health Recommendation</h3>
+        <p id="healthAdviceText"><strong>AQI:</strong> 42 — Good</p>
+        <div id="aqActions">
+          <strong>Suggested actions:</strong>
+          <ul style="color:var(--text-secondary);font-size:13px;margin:6px 0 0 18px;">
+            <li>Air quality is good — outdoor activities OK.</li>
+            <li>People with respiratory issues should monitor updates.</li>
+          </ul>
         </div>
       </section>
     </main>

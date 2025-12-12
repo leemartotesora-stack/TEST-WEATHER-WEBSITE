@@ -63,8 +63,113 @@ function createAndReturnButton(id, text) {
   const b = document.createElement('button');
   b.id = id;
   b.textContent = text;
+  // Assign modern classes for known buttons so dynamically-created fallbacks
+  // match the current design used in the HTML/CSS.
+  if (id === 'useLocationBtn') {
+    b.className = 'use-location-btn';
+    b.type = 'button';
+  } else if (id === 'searchBtn') {
+    b.className = 'search-btn';
+    b.type = 'button';
+  }
   document.body.appendChild(b);
   return b;
+}
+
+/* Show mock data for placeholder cities (only when user searches) */
+function revealMock(cityName) {
+  lastFetched.locationName = cityName + ', PH';
+  ensureId('weatherIcon');
+  ensureId('temp');
+  ensureId('description');
+  ensureId('cityName');
+  ensureId('timestamp');
+  ensureId('humidity');
+  ensureId('windSpeed');
+  ensureId('feelsLike');
+  ensureId('pressure');
+  ensureId('sunrise');
+  ensureId('sunset');
+  ensureId('uvIndex');
+  ensureId('uvLabel');
+  ensureId('visibility');
+  ensureId('aqiBadge');
+  ensureId('aqiLabel');
+
+  $('weatherIcon').textContent = '⛅';
+  $('temp').textContent = '26°C';
+  $('description').textContent = 'Partly Cloudy';
+  $('cityName').textContent = lastFetched.locationName;
+  $('timestamp').textContent = new Date().toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  $('humidity').textContent = '68%';
+  $('windSpeed').textContent = '4.2 m/s';
+  $('feelsLike').textContent = '27°C';
+  $('pressure').textContent = '1013 hPa';
+  $('sunrise').textContent = '05:20';
+  $('sunset').textContent = '17:45';
+  $('aqiBadge').textContent = '42';
+  $('aqiLabel').textContent = 'Good — Low health risk';
+  $('uvIndex').textContent = '3';
+  $('uvLabel').textContent = 'Moderate — Use sun protection';
+  $('visibility').textContent = '10 km';
+
+  // Forecast (simple static cards)
+  if (forecastGrid) {
+    forecastGrid.innerHTML = `
+      <div class="forecast-card"><div class="day">Today</div><div class="icon">⛅</div><div class="temps">24° / 30°</div><div class="desc">Partly Cloudy</div></div>
+      <div class="forecast-card"><div class="day">Sun</div><div class="icon">🌧️</div><div class="temps">23° / 28°</div><div class="desc">Light Rain</div></div>
+      <div class="forecast-card"><div class="day">Mon</div><div class="icon">☀️</div><div class="temps">25° / 31°</div><div class="desc">Sunny</div></div>
+      <div class="forecast-card"><div class="day">Tue</div><div class="icon">⛅</div><div class="temps">24° / 29°</div><div class="desc">Partly Cloudy</div></div>
+      <div class="forecast-card"><div class="day">Wed</div><div class="icon">🌦️</div><div class="temps">22° / 27°</div><div class="desc">Showers</div></div>
+    `;
+  }
+
+  if (hourlyScroll) {
+    hourlyScroll.innerHTML = `
+      <div class="hourly-card"><div class="hourly-time">10:00</div><div class="hourly-icon">⛅</div><div class="hourly-temp">26°C</div></div>
+      <div class="hourly-card"><div class="hourly-time">11:00</div><div class="hourly-icon">⛅</div><div class="hourly-temp">27°C</div></div>
+      <div class="hourly-card"><div class="hourly-time">12:00</div><div class="hourly-icon">☀️</div><div class="hourly-temp">28°C</div></div>
+      <div class="hourly-card"><div class="hourly-time">13:00</div><div class="hourly-icon">☀️</div><div class="hourly-temp">29°C</div></div>
+      <div class="hourly-card"><div class="hourly-time">14:00</div><div class="hourly-icon">☀️</div><div class="hourly-temp">29°C</div></div>
+      <div class="hourly-card"><div class="hourly-time">15:00</div><div class="hourly-icon">⛅</div><div class="hourly-temp">28°C</div></div>
+      <div class="hourly-card"><div class="hourly-time">16:00</div><div class="hourly-icon">⛅</div><div class="hourly-temp">27°C</div></div>
+      <div class="hourly-card"><div class="hourly-time">17:00</div><div class="hourly-icon">🌤️</div><div class="hourly-temp">26°C</div></div>
+      <div class="hourly-card"><div class="hourly-time">18:00</div><div class="hourly-icon">🌇</div><div class="hourly-temp">25°C</div></div>
+      <div class="hourly-card"><div class="hourly-time">19:00</div><div class="hourly-icon">🌙</div><div class="hourly-temp">24°C</div></div>
+      <div class="hourly-card"><div class="hourly-time">20:00</div><div class="hourly-icon">🌙</div><div class="hourly-temp">23°C</div></div>
+      <div class="hourly-card"><div class="hourly-time">21:00</div><div class="hourly-icon">🌙</div><div class="hourly-temp">22°C</div></div>
+    `;
+  }
+
+  if (alertsList) {
+    alertsList.innerHTML = `
+      <div class="alert-item"><strong>Flood Watch:</strong> Elevated river levels in low-lying areas; avoid crossing flooded roads.</div>
+      <div class="alert-item"><strong>Air Quality Advisory:</strong> Sensitive groups should limit prolonged outdoor exertion.</div>
+    `;
+    alertsSection.style.display = 'block';
+  }
+
+  const pad = document.getElementById('plantAdviceText');
+  if (pad) pad.innerHTML = '<strong>Best watering time:</strong> Early morning or late evening (avoid hottest hours).<br/><strong>Humidity:</strong> Moderate (approx 60%).<br/><strong>Pest warnings:</strong> Watch for aphids after rainy days.';
+
+  const hsd = document.getElementById('hazardScoreDisplay');
+  if (hsd) hsd.textContent = '3/10';
+  const hd = document.getElementById('hazardDescription');
+  if (hd) hd.textContent = 'Low risk — localized flooding possible in low areas.';
+
+  const hat = document.getElementById('healthAdviceText');
+  if (hat) hat.innerHTML = '<strong>AQI:</strong> 42 — Good';
+
+  // Reveal sections
+  if (currentWeather) currentWeather.style.display = 'block';
+  if (forecastSection) forecastSection.style.display = 'block';
+  if (hourlySection) hourlySection.style.display = 'block';
+  if (infoGrid) infoGrid.style.display = 'grid';
+  if (plantAdvisor) plantAdvisor.style.display = 'block';
+  if (hazardSection) hazardSection.style.display = 'block';
+  if (healthSection) healthSection.style.display = 'block';
+
+  hideLoading();
 }
 
 /* ---------------------------
@@ -167,115 +272,190 @@ function cToF(c) {
   return (c * 9 / 5) + 32;
 }
 function showTemp(metricTemp) {
-  if (metricTemp === null || metricTemp === undefined) return '';
-  return currentUnit === 'metric' ? Math.round(metricTemp) + '�C' : Math.round(cToF(metricTemp)) + '�F';
+  if (metricTemp === null || metricTemp === undefined) return '--';
+  const rounded = Math.round(metricTemp);
+  return currentUnit === 'metric' ? `${rounded}°C` : `${Math.round(cToF(metricTemp))}°F`;
 }
 
 /* ---------------------------
-   Fetching: weather + onecall + air pollution
+   Fetching: weather + forecast using Open-Meteo (open-source, no API key)
    --------------------------- */
 async function triggerSearch() {
   const city = cityInput.value.split(',')[0].trim();
   if (!city) return alert('Please enter a city name');
   showLoading();
   hideError();
+  try { searchBtn.classList.add('searching'); } catch (e) {}
   try {
-    const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric`);
-    if (!res.ok) throw new Error('Location not found');
-    const data = await res.json();
-    const lat = data.coord.lat;
-    const lon = data.coord.lon;
-    const locationName = `${data.name}, ${data.sys.country}`;
-    let oneCallData = null;
-    try {
-      const oneCallRes = await fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely&units=metric&appid=${API_KEY}`);
-      if (!oneCallRes.ok) {
-        const fallback = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely&units=metric&appid=${API_KEY}`);
-        oneCallData = fallback.ok ? await fallback.json() : null;
-      } else {
-        oneCallData = await oneCallRes.json();
-      }
-    } catch (e) {
-      oneCallData = null;
-    }
-    let aqData = null;
-    try {
-      const aqRes = await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${API_KEY}`);
-      aqData = aqRes.ok ? await aqRes.json() : null;
-    } catch (e) {
-      aqData = null;
-    }
+    // Geocode city name using Open-Meteo Geocoding API
+    const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`);
+    if (!geoRes.ok) throw new Error('Location not found');
+    const geoData = await geoRes.json();
+    if (!geoData.results || !geoData.results[0]) throw new Error('Location not found');
+    const location = geoData.results[0];
+    const lat = location.latitude;
+    const lon = location.longitude;
+    const locationName = `${location.name}${location.admin1 ? ', ' + location.admin1 : ''}${location.country ? ', ' + location.country : ''}`;
+    
+    // Fetch weather and forecast using Open-Meteo Weather API
+    const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,pressure_msl,visibility&daily=temperature_2m_max,temperature_2m_min,weather_code,rain_sum,precipitation_probability_max,wind_speed_10m_max,sunrise,sunset,uv_index_max&hourly=temperature_2m,weather_code&timezone=auto`);
+    if (!weatherRes.ok) throw new Error('Weather fetch failed');
+    const weatherData = await weatherRes.json();
+    
+    // Transform Open-Meteo response to match existing renderWeather structure
+    const data = transformOpenMeteoToCurrent(weatherData, locationName);
+    const oneCallData = transformOpenMeteoToForecast(weatherData);
+    const aqData = null;
+    
     lastFetched = { rawWeather: data, oneCall: oneCallData, aq: aqData, locationName };
     renderWeather(data, oneCallData, aqData);
+    try { searchBtn.classList.remove('searching'); } catch (e) {}
     hideLoading();
   } catch (err) {
-    console.error(err);
+    console.error('Search error:', err);
     showError('Error fetching weather data.');
+    try { searchBtn.classList.remove('searching'); } catch (e) {}
     hideLoading();
   }
 }
 
+// Transform Open-Meteo current data to OpenWeatherMap format
+function transformOpenMeteoToCurrent(data, locationName) {
+  const current = data.current || {};
+  const description = getWeatherDescription(current.weather_code);
+  return {
+    name: locationName.split(',')[0],
+    sys: { country: locationName.includes(',') ? locationName.split(',')[1].trim().split(',')[0] : '', sunrise: null, sunset: null },
+    weather: [{ id: current.weather_code || 800, main: description, description, icon: getWeatherIcon(current.weather_code) }],
+    main: {
+      temp: current.temperature_2m || 0,
+      feels_like: current.apparent_temperature || 0,
+      humidity: current.relative_humidity_2m || 0,
+      pressure: current.pressure_msl || 0
+    },
+    wind: { speed: current.wind_speed_10m || 0 },
+    visibility: (current.visibility || 10000) * 1000,
+    coord: { lat: data.latitude, lon: data.longitude }
+  };
+}
+
+// Transform Open-Meteo forecast to OpenWeatherMap OneCall format
+function transformOpenMeteoToForecast(data) {
+  const daily = data.daily || {};
+  const hourly = data.hourly || {};
+  const current = data.current || {};
+  
+  return {
+    current: {
+      temp: current.temperature_2m || 0,
+      feels_like: current.apparent_temperature || 0,
+      humidity: current.relative_humidity_2m || 0,
+      pressure: current.pressure_msl || 0,
+      wind_speed: current.wind_speed_10m || 0,
+      weather: [{ id: current.weather_code || 800, main: getWeatherDescription(current.weather_code), description: getWeatherDescription(current.weather_code), icon: getWeatherIcon(current.weather_code) }],
+      sunrise: daily.sunrise && daily.sunrise[0] ? new Date(daily.sunrise[0]).getTime() / 1000 : null,
+      sunset: daily.sunset && daily.sunset[0] ? new Date(daily.sunset[0]).getTime() / 1000 : null,
+      uvi: daily.uv_index_max && daily.uv_index_max[0] ? daily.uv_index_max[0] : 0
+    },
+    daily: (daily.time || []).map((time, idx) => ({
+      dt: new Date(time).getTime() / 1000,
+      temp: { day: daily.temperature_2m_max ? daily.temperature_2m_max[idx] : 0, min: daily.temperature_2m_min ? daily.temperature_2m_min[idx] : 0, max: daily.temperature_2m_max ? daily.temperature_2m_max[idx] : 0 },
+      feels_like: { day: daily.temperature_2m_max ? daily.temperature_2m_max[idx] - 2 : 0 },
+      humidity: current.relative_humidity_2m || 50,
+      weather: [{ id: daily.weather_code && daily.weather_code[idx] ? daily.weather_code[idx] : 800, main: getWeatherDescription(daily.weather_code ? daily.weather_code[idx] : 800), description: getWeatherDescription(daily.weather_code ? daily.weather_code[idx] : 800), icon: getWeatherIcon(daily.weather_code ? daily.weather_code[idx] : 800) }],
+      wind_speed: daily.wind_speed_10m_max ? daily.wind_speed_10m_max[idx] : 0,
+      pop: daily.precipitation_probability_max ? daily.precipitation_probability_max[idx] / 100 : 0,
+      rain: daily.rain_sum ? daily.rain_sum[idx] : 0,
+      sunrise: daily.sunrise && daily.sunrise[idx] ? new Date(daily.sunrise[idx]).getTime() / 1000 : null,
+      sunset: daily.sunset && daily.sunset[idx] ? new Date(daily.sunset[idx]).getTime() / 1000 : null,
+      uvi: daily.uv_index_max ? daily.uv_index_max[idx] : 0,
+      clouds: 0
+    })),
+    hourly: (hourly.time || []).slice(0, 12).map((time, idx) => ({
+      dt: new Date(time).getTime() / 1000,
+      temp: hourly.temperature_2m ? hourly.temperature_2m[idx] : 0,
+      weather: [{ id: hourly.weather_code && hourly.weather_code[idx] ? hourly.weather_code[idx] : 800, main: getWeatherDescription(hourly.weather_code ? hourly.weather_code[idx] : 800), description: getWeatherDescription(hourly.weather_code ? hourly.weather_code[idx] : 800), icon: getWeatherIcon(hourly.weather_code ? hourly.weather_code[idx] : 800) }],
+      wind_speed: current.wind_speed_10m || 0
+    })),
+    alerts: []
+  };
+}
+
+// WMO Weather interpretation codes
+function getWeatherDescription(code) {
+  const codeMap = {
+    0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
+    45: 'Foggy', 48: 'Foggy', 51: 'Light drizzle', 53: 'Moderate drizzle', 55: 'Dense drizzle',
+    61: 'Slight rain', 63: 'Moderate rain', 65: 'Heavy rain',
+    71: 'Slight snow', 73: 'Moderate snow', 75: 'Heavy snow', 77: 'Snow grains',
+    80: 'Slight rain showers', 81: 'Moderate rain showers', 82: 'Violent rain showers',
+    85: 'Slight snow showers', 86: 'Heavy snow showers',
+    95: 'Thunderstorm', 96: 'Thunderstorm with hail', 99: 'Thunderstorm with hail'
+  };
+  return codeMap[code] || 'Unknown';
+}
+
+function getWeatherIcon(code) {
+  if (code === 0) return '01d';
+  if (code <= 3) return '02d';
+  if (code <= 48) return '50d';
+  if (code <= 55) return '09d';
+  if (code <= 65) return '10d';
+  if (code <= 77) return '13d';
+  if (code <= 82) return '09d';
+  if (code <= 86) return '13d';
+  if (code <= 99) return '11d';
+  return '01d';
+}
+infoGrid
 /* ---------------------------
    Geolocation
    --------------------------- */
 useLocationBtn.addEventListener('click', () => {
   if (!navigator.geolocation) return alert('Geolocation not supported.');
+  try {
+    useLocationBtn.disabled = true;
+    try { useLocationBtn.classList.add('searching'); } catch(e) {}
+  } catch (e) {}
   showLoading();
   navigator.geolocation.getCurrentPosition(async (pos) => {
     const lat = pos.coords.latitude;
     const lon = pos.coords.longitude;
     try {
-      const geoRes = await fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${API_KEY}`);
+      // Reverse geocode using nominatim
+      const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
       if (geoRes.ok) {
         const geo = await geoRes.json();
-        if (Array.isArray(geo) && geo.length) {
-          cityInput.value = `${geo[0].name}, ${geo[0].country}`;
+        if (geo && geo.address) {
+          const addr = geo.address;
+          cityInput.value = [addr.city || addr.town || addr.village || addr.county, addr.country].filter(Boolean).join(', ');
         }
       }
-      let oneCallData = null;
-      try {
-        const oneCallRes = await fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely&units=metric&appid=${API_KEY}`);
-        if (!oneCallRes.ok) {
-          const fallback = await fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely&units=metric&appid=${API_KEY}`);
-          oneCallData = fallback.ok ? await fallback.json() : null;
-        } else {
-          oneCallData = await oneCallRes.json();
-        }
-      } catch (e) {
-        oneCallData = null;
-      }
-      let aqData = null;
-      try {
-        const aqRes = await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${API_KEY}`);
-        aqData = aqRes.ok ? await aqRes.json() : null;
-      } catch (e) {
-        aqData = null;
-      }
-      const data = {
-        name: cityInput.value.split(',')[0] || 'My Location',
-        sys: { country: '' },
-        weather: (oneCallData && oneCallData.current && oneCallData.current.weather) ? oneCallData.current.weather : [{ icon: '01d', description: '' }],
-        main: {
-          temp: (oneCallData && oneCallData.current) ? oneCallData.current.temp : null,
-          feels_like: (oneCallData && oneCallData.current) ? oneCallData.current.feels_like : null,
-          humidity: (oneCallData && oneCallData.current) ? oneCallData.current.humidity : null,
-          pressure: (oneCallData && oneCallData.current) ? oneCallData.current.pressure : null
-        },
-        wind: { speed: (oneCallData && oneCallData.current) ? oneCallData.current.wind_speed : 0 },
-        coord: { lat, lon },
-        sys: { sunrise: (oneCallData && oneCallData.current) ? oneCallData.current.sunrise : null, sunset: (oneCallData && oneCallData.current) ? oneCallData.current.sunset : null }
-      };
-      lastFetched = { rawWeather: data, oneCall: oneCallData, aq: aqData, locationName: cityInput.value };
+
+      // Fetch weather using Open-Meteo API
+      const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,pressure_msl,visibility&daily=temperature_2m_max,temperature_2m_min,weather_code,rain_sum,precipitation_probability_max,wind_speed_10m_max,sunrise,sunset,uv_index_max&hourly=temperature_2m,weather_code&timezone=auto`);
+      if (!weatherRes.ok) throw new Error('Weather fetch failed');
+      const weatherData = await weatherRes.json();
+
+      // Transform to match renderWeather structure
+      const data = transformOpenMeteoToCurrent(weatherData, cityInput.value || `${lat.toFixed(2)}, ${lon.toFixed(2)}`);
+      const oneCallData = transformOpenMeteoToForecast(weatherData);
+      const aqData = null;
+
+      const locationName = cityInput.value || (data && data.name ? `${data.name}${data.sys && data.sys.country ? ', ' + data.sys.country : ''}` : 'My Location');
+      lastFetched = { rawWeather: data, oneCall: oneCallData, aq: aqData, locationName };
       renderWeather(data, oneCallData, aqData);
     } catch (err) {
       console.error(err);
       showError('Unable to fetch location weather.');
     } finally {
       hideLoading();
+      try { useLocationBtn.disabled = false; useLocationBtn.classList.remove('searching'); } catch (e) {}
     }
   }, (err) => {
     console.error(err);
     hideLoading();
+    try { useLocationBtn.disabled = false; useLocationBtn.classList.remove('searching'); } catch (e) {}
     showError('Unable to retrieve your location.');
   }, { enableHighAccuracy: false, timeout: 10000 });
 });
@@ -289,16 +469,16 @@ function renderWeather(data, oneCallData, aqData, dontSetTimestamp = false) {
   lastFetched.aq = aqData;
 
   const iconMap = {
-    '01d': '', '01n': '',
-    '02d': '', '02n': '',
-    '03d': '', '03n': '',
-    '04d': '', '04n': '',
-    '09d': '', '09n': '',
-    '10d': '', '10n': '',
-    '11d': '', '11n': '',
-    '13d': '', '13n': '',
-    '50d': '', '50n': ''
-  };
+  '01d': '☀️', '01n': '🌙',
+  '02d': '⛅', '02n': '☁️',
+  '03d': '☁️', '03n': '☁️',
+  '04d': '☁️', '04n': '☁️',
+  '09d': '🌧️', '09n': '🌧️',
+  '10d': '🌦️', '10n': '🌦️',
+  '11d': '⛈️', '11n': '⛈️',
+  '13d': '❄️', '13n': '❄️',
+  '50d': '🌫️', '50n': '🌫️'
+};
 
   ensureId('weatherIcon');
   ensureId('temp');
@@ -350,30 +530,52 @@ function renderWeather(data, oneCallData, aqData, dontSetTimestamp = false) {
   renderAQDetails(aqData);
   applyAqiClass(aqiBadgeEl, aqi);
 
-  forecastGrid.innerHTML = '';
-  if (oneCallData && Array.isArray(oneCallData.daily)) {
-    oneCallData.daily.slice(1, 6).forEach(day => {
-      const d = new Date(day.dt * 1000);
-      const ico = (day.weather && day.weather[0] && day.weather[0].icon) ? iconMap[day.weather[0].icon] : '';
-      const card = document.createElement('div');
-      card.className = 'forecast-card';
-      card.innerHTML = `<div class="forecast-date">${d.toLocaleDateString([], { weekday: 'short' })}</div><div class="forecast-icon">${ico}</div><div class="forecast-temp">${showTemp(day.temp.day)}</div><div class="forecast-range">${Math.round(day.temp.min)}� / ${Math.round(day.temp.max)}�</div>`;
-      card.addEventListener('click', () => showDailyModal(day, d));
-      forecastGrid.appendChild(card);
-    });
-  }
+  // In renderWeather function, find the forecast grid update section (around line 340):
+// Update forecast section - VERTICAL layout
+forecastGrid.innerHTML = '';
+if (oneCallData && Array.isArray(oneCallData.daily)) {
+  oneCallData.daily.slice(1, 6).forEach(day => {
+    const d = new Date(day.dt * 1000);
+    const ico = (day.weather && day.weather[0] && day.weather[0].icon) ? iconMap[day.weather[0].icon] : '';
+    const desc = day.weather && day.weather[0] ? capitalizeFirst(day.weather[0].description) : '';
+    
+    const card = document.createElement('div');
+    card.className = 'forecast-card-vertical';
+    
+    card.innerHTML = `
+      <div class="forecast-day">${d.toLocaleDateString([], { weekday: 'short' })}</div>
+      <div class="forecast-icon">${ico}</div>
+      <div class="forecast-temp-range">${Math.round(day.temp.min)}° / ${Math.round(day.temp.max)}°</div>
+      <div class="forecast-desc">${desc}</div>
+    `;
+    
+    card.addEventListener('click', () => showDailyModal(day, d));
+    forecastGrid.appendChild(card);
+  });
+}
+
+// Also change the container class in forecastGrid
+if (forecastGrid) {
+  forecastGrid.className = 'forecast-vertical-grid';
+}
 
   hourlyScroll.innerHTML = '';
-  if (oneCallData && Array.isArray(oneCallData.hourly)) {
-    oneCallData.hourly.slice(0, 12).forEach(hour => {
-      const d = new Date(hour.dt * 1000);
-      const ico = (hour.weather && hour.weather[0] && hour.weather[0].icon) ? iconMap[hour.weather[0].icon] : '';
-      const card = document.createElement('div');
-      card.className = 'hourly-card';
-      card.innerHTML = `<div class="hourly-time">${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div><div class="hourly-icon">${ico}</div><div class="hourly-temp">${showTemp(hour.temp)}</div>`;
-      hourlyScroll.appendChild(card);
-    });
-  }
+if (oneCallData && Array.isArray(oneCallData.hourly)) {
+  oneCallData.hourly.slice(0, 12).forEach(hour => {
+    const d = new Date(hour.dt * 1000);
+    const ico = (hour.weather && hour.weather[0] && hour.weather[0].icon) ? iconMap[hour.weather[0].icon] : '';
+    const card = document.createElement('div');
+    card.className = 'hourly-card';
+    
+    // FIXED: Use proper structure
+    card.innerHTML = `
+      <div class="hourly-time">${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+      <div class="hourly-icon">${ico}</div>
+      <div class="hourly-temp">${showTemp(hour.temp)}</div>
+    `;
+    hourlyScroll.appendChild(card);
+  });
+}
 
   alertsList.innerHTML = '';
   if (oneCallData && oneCallData.alerts && oneCallData.alerts.length) {
@@ -405,6 +607,13 @@ function renderWeather(data, oneCallData, aqData, dontSetTimestamp = false) {
 
   // Enter fullscreen UI mode on successful render
   enterFullscreenUI();
+
+  // Update horizontal scrollbar after content loads
+  setTimeout(function() {
+    if (typeof setupHorizontalScrollbar === 'function') {
+      setupHorizontalScrollbar();
+    }
+  }, 300);
 }
 
 /* ---------------------------
@@ -412,36 +621,12 @@ function renderWeather(data, oneCallData, aqData, dontSetTimestamp = false) {
    --------------------------- */
 let isFullscreen = false;
 function enterFullscreenUI() {
-  if (isFullscreen) return;
-  isFullscreen = true;
-  document.body.classList.add('fullscreen-mode');
-  const app = document.querySelector('.app-container');
-  if (app) app.classList.add('fullscreen');
-  // ensure right-column containers appear inside the right column visually
-  const rightNodes = ['forecastSection','hourlySection','infoGrid','alertsSection','plantAdvisor','hazardSection','healthSection'];
-  rightNodes.forEach(id => {
-    const n = document.getElementById(id);
-    if (n) n.style.display = 'block';
-  });
-  // create exit button
-  if (!document.getElementById('exitFullscreenBtn')) {
-    const btn = document.createElement('button');
-    btn.id = 'exitFullscreenBtn';
-    btn.className = 'exit-fullscreen-btn';
-    btn.title = 'Exit full view';
-    btn.innerHTML = '';
-    btn.addEventListener('click', exitFullscreenUI);
-    document.body.appendChild(btn);
-  }
+  // Fullscreen mode disabled - keep normal layout
+  return;
 }
 function exitFullscreenUI() {
-  if (!isFullscreen) return;
-  isFullscreen = false;
-  document.body.classList.remove('fullscreen-mode');
-  const app = document.querySelector('.app-container');
-  if (app) app.classList.remove('fullscreen');
-  const btn = document.getElementById('exitFullscreenBtn');
-  if (btn) btn.remove();
+  // Fullscreen mode disabled - keep normal layout
+  return;
 }
 
 /* ---------------------------
@@ -651,7 +836,7 @@ function renderAQDetails(aqData) {
     return;
   }
   const comp = aqData.list[0].components || {};
-  aqDetails.innerHTML = `<div><strong>PM2.5:</strong> ${comp.pm2_5 ?? ''} �g/m�</div><div><strong>PM10:</strong> ${comp.pm10 ?? ''} �g/m�</div><div><strong>NO:</strong> ${comp.no2 ?? ''} �g/m�</div><div><strong>SO:</strong> ${comp.so2 ?? ''} �g/m�</div><div><strong>O:</strong> ${comp.o3 ?? ''} �g/m�</div><div><strong>CO:</strong> ${comp.co ?? ''} �g/m�</div>`;
+  aqDetails.innerHTML = `<div><strong>PM2.5:</strong> ${comp.pm2_5 ?? '--'} µg/m³</div><div><strong>PM10:</strong> ${comp.pm10 ?? '--'} µg/m³</div><div><strong>NO₂:</strong> ${comp.no2 ?? '--'} µg/m³</div><div><strong>SO₂:</strong> ${comp.so2 ?? '--'} µg/m³</div><div><strong>O₃:</strong> ${comp.o3 ?? '--'} µg/m³</div><div><strong>CO:</strong> ${comp.co ?? '--'} µg/m³</div>`;
 }
 
 /* ---------------------------
@@ -662,10 +847,10 @@ function showDailyModal(dayData, date) {
   if (!modal) {
     modal = document.createElement('div');
     modal.id = 'dailyModal';
-    Object.assign(modal.style, { position: 'fixed', left: 0, top: 0, right: 0, bottom: 0, display: 'none', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.4)', zIndex: 2000 });
+    Object.assign(modal.style, { position: 'fixed', left: 0, top: 0, right: 0, bottom: 0, display: 'none', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)', zIndex: 2000 });
     const card = document.createElement('div');
     card.id = 'dailyModalCard';
-    Object.assign(card.style, { background: 'white', padding: '16px', borderRadius: '12px', maxWidth: '600px', width: '90%' });
+    Object.assign(card.style, { background: 'white', padding: '24px', borderRadius: '12px', maxWidth: '500px', width: '90%', maxHeight: '80vh', overflowY: 'auto', boxShadow: 'var(--shadow-lg)' });
     modal.appendChild(card);
     document.body.appendChild(modal);
   }
@@ -673,7 +858,7 @@ function showDailyModal(dayData, date) {
   const sunrise = new Date(dayData.sunrise * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   const sunset = new Date(dayData.sunset * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   const pop = Math.round((dayData.pop || 0) * 100);
-  card.innerHTML = `<h3 style="margin-top:0">${date.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' })}</h3><p><strong>${capitalizeFirst(dayData.weather[0].description)}</strong></p><div style="display:flex;gap:12px;flex-wrap:wrap"><div>Max: ${showTemp(dayData.temp.max)}</div><div>Min: ${showTemp(dayData.temp.min)}</div><div>Feels like: ${showTemp(dayData.feels_like.day)}</div><div>Humidity: ${dayData.humidity}%</div><div>Wind: ${formatWind(dayData.wind_speed)}</div><div>Rain chance: ${pop}%</div><div>Clouds: ${dayData.clouds}%</div><div>UV index: ${dayData.uvi ?? ''}</div><div>Sunrise: ${sunrise}</div><div>Sunset: ${sunset}</div></div><p style="margin-top:12px">${dayData.weather[0].description}</p><button id="closeDailyModal" style="margin-top:12px">Close</button>`;
+  card.innerHTML = `<h3 style="margin-top:0;color:var(--text);margin-bottom:16px">${date.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' })}</h3><p style="color:var(--text-light);margin:0 0 12px 0"><strong style="color:var(--text)">${capitalizeFirst(dayData.weather[0].description)}</strong></p><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px"><div style="padding:12px;background:var(--primary-light);border-radius:8px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Max</div><div style="font-size:18px;font-weight:600;color:var(--text)">${showTemp(dayData.temp.max)}</div></div><div style="padding:12px;background:var(--primary-light);border-radius:8px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Min</div><div style="font-size:18px;font-weight:600;color:var(--text)">${showTemp(dayData.temp.min)}</div></div><div style="padding:12px;background:var(--primary-light);border-radius:8px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Feels Like</div><div style="font-size:18px;font-weight:600;color:var(--text)">${showTemp(dayData.feels_like.day)}</div></div><div style="padding:12px;background:var(--primary-light);border-radius:8px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Humidity</div><div style="font-size:18px;font-weight:600;color:var(--text)">${dayData.humidity}%</div></div><div style="padding:12px;background:var(--primary-light);border-radius:8px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Wind</div><div style="font-size:18px;font-weight:600;color:var(--text)">${formatWind(dayData.wind_speed)}</div></div><div style="padding:12px;background:var(--primary-light);border-radius:8px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Rain Chance</div><div style="font-size:18px;font-weight:600;color:var(--text)">${pop}%</div></div><div style="padding:12px;background:var(--primary-light);border-radius:8px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Clouds</div><div style="font-size:18px;font-weight:600;color:var(--text)">${dayData.clouds}%</div></div><div style="padding:12px;background:var(--primary-light);border-radius:8px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">UV Index</div><div style="font-size:18px;font-weight:600;color:var(--text)">${dayData.uvi?.toFixed(1) ?? '--'}</div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px"><div><div style="font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:600">Sunrise</div><div style="font-size:16px;font-weight:600;color:var(--text)">${sunrise}</div></div><div><div style="font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:600">Sunset</div><div style="font-size:16px;font-weight:600;color:var(--text)">${sunset}</div></div></div><button id="closeDailyModal" style="width:100%;padding:12px;background:var(--primary);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:all 0.2s">Close</button>`;
   document.getElementById('closeDailyModal').addEventListener('click', closeDailyModal);
   modal.style.display = 'flex';
 }
@@ -733,16 +918,127 @@ function formatWind(speedMps) {
 }
 
 function applyDynamicBackground(weatherId, iconCode) {
-  let cls = 'bg-default';
-  if (weatherId >= 200 && weatherId < 300) cls = 'bg-thunder';
-  else if (weatherId >= 300 && weatherId < 600) cls = 'bg-rain';
-  else if (weatherId >= 600 && weatherId < 700) cls = 'bg-snow';
-  else if (weatherId >= 700 && weatherId < 800) cls = 'bg-fog';
-  else if (weatherId === 800) cls = (iconCode && iconCode.endsWith('n')) ? 'bg-night-clear' : 'bg-sunny';
-  else cls = 'bg-cloudy';
+  const bgClasses = ['bg-day','bg-night','bg-rain','bg-sunny','bg-rain','bg-thunder','bg-snow','bg-cloudy','bg-fog','bg-night-clear','bg-default'];
+  document.body.classList.remove(...bgClasses);
 
-  document.body.classList.remove('bg-thunder', 'bg-rain', 'bg-snow', 'bg-fog', 'bg-night-clear', 'bg-sunny', 'bg-cloudy', 'bg-default');
+  let cls = 'bg-default';
+  const id = Number(weatherId);
+  if (isFinite(id)) {
+    if (id >= 200 && id < 300) cls = 'bg-rain'; // use rain image for storms
+    else if ((id >= 300 && id < 400) || (id >= 500 && id < 600)) cls = 'bg-rain';
+    else if (id >= 600 && id < 700) cls = 'bg-snow';
+    else if (id >= 700 && id < 800) cls = 'bg-fog';
+    else if (id === 800) cls = (iconCode && String(iconCode).includes('n')) ? 'bg-night' : 'bg-day';
+    else if (id > 800 && id < 900) cls = 'bg-cloudy';
+  }
+
   document.body.classList.add(cls);
+
+  // Create or update a subtle particle/icon overlay matching the background
+  try { _ensureWeatherOverlayForClass(cls); } catch (e) { console.warn('Overlay error', e); }
+}
+
+function _ensureWeatherOverlayForClass(bgClass) {
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    _removeWeatherOverlay();
+    return;
+  }
+
+  const map = {
+    'bg-rain': 'overlay-rain',
+    'bg-snow': 'overlay-snow',
+    'bg-thunder': 'overlay-thunder',
+    'bg-cloudy': 'overlay-clouds',
+    'bg-sunny': 'overlay-sunny',
+    'bg-day': 'overlay-sunny',
+    'bg-night': 'overlay-stars',
+    'bg-fog': 'overlay-pollen',
+    'bg-night-clear': 'overlay-stars',
+    'bg-default': ''
+  };
+
+  const overlayClass = map[bgClass] || '';
+  const existing = document.getElementById('weatherOverlay');
+  if (!overlayClass) {
+    if (existing) _removeWeatherOverlay();
+    return;
+  }
+
+  const ol = existing || (function(){ const d=document.createElement('div'); d.id='weatherOverlay'; d.className='weather-overlay'; document.body.appendChild(d); return d; })();
+  ol.className = 'weather-overlay';
+  if (overlayClass) ol.classList.add(overlayClass);
+  ol.innerHTML = '';
+
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  const rainCount = isMobile? 14 : 28;
+  const snowCount = isMobile? 10 : 22;
+  const starCount = isMobile? 18 : 36;
+  const pollenCount = isMobile? 12 : 24;
+
+  if (overlayClass === 'overlay-rain') {
+    for (let i=0;i<rainCount;i++){
+      const s=document.createElement('span'); s.className='drop';
+      s.style.left = (Math.random()*100)+'%';
+      s.style.animationDelay = (Math.random()*1.2)+'s';
+      s.style.opacity = (0.4 + Math.random()*0.6).toFixed(2);
+      s.style.height = (8 + Math.random()*18) + 'px';
+      ol.appendChild(s);
+    }
+  } else if (overlayClass === 'overlay-snow'){
+    for (let i=0;i<snowCount;i++){
+      const f=document.createElement('span'); f.className='flake';
+      f.style.left = (Math.random()*100)+'%';
+      f.style.animationDelay = (Math.random()*4)+'s';
+      f.style.opacity = (0.7 + Math.random()*0.3).toFixed(2);
+      f.style.width = f.style.height = (4 + Math.random()*8) + 'px';
+      f.style.animationDuration = (6 + Math.random()*6) + 's';
+      ol.appendChild(f);
+    }
+  } else if (overlayClass === 'overlay-stars'){
+    for (let i=0;i<starCount;i++){
+      const st=document.createElement('span'); st.className='star';
+      st.style.left = (Math.random()*100)+'%';
+      st.style.top = (Math.random()*60)+'%';
+      st.style.animationDelay = (Math.random()*3)+'s';
+      st.style.opacity = (0.2 + Math.random()*0.9).toFixed(2);
+      ol.appendChild(st);
+    }
+  } else if (overlayClass === 'overlay-clouds'){
+    const cloudCount = isMobile? 2 : 4;
+    for (let i=0;i<cloudCount;i++){
+      const c=document.createElement('div'); c.className='cloud';
+      c.style.top = (5 + i*12 + Math.random()*20)+'vh';
+      c.style.left = (-30 + Math.random()*60)+'vw';
+      c.style.opacity = (0.08 + Math.random()*0.18).toFixed(2);
+      c.style.animationDuration = (20 + Math.random()*30) + 's';
+      ol.appendChild(c);
+    }
+  } else if (overlayClass === 'overlay-pollen'){
+    for (let i=0;i<pollenCount;i++){
+      const p=document.createElement('span'); p.className='pollen';
+      p.style.left = (Math.random()*100)+'%';
+      p.style.top = (Math.random()*40)+'%';
+      p.style.animationDelay = (Math.random()*6)+'s';
+      p.style.opacity = (0.6 + Math.random()*0.4).toFixed(2);
+      ol.appendChild(p);
+    }
+  } else if (overlayClass === 'overlay-thunder'){
+    for (let i=0;i<10;i++){
+      const s=document.createElement('span'); s.className='drop';
+      s.style.left = (Math.random()*100)+'%';
+      s.style.animationDelay = (Math.random()*1.4)+'s';
+      s.style.opacity = (0.35 + Math.random()*0.6).toFixed(2);
+      s.style.height = (6 + Math.random()*14) + 'px';
+      ol.appendChild(s);
+    }
+  } else if (overlayClass === 'overlay-sunny'){
+    const sun = document.createElement('div'); sun.className='sun'; sun.textContent='☀︎'; ol.appendChild(sun);
+  }
+}
+
+function _removeWeatherOverlay(){
+  const ex = document.getElementById('weatherOverlay');
+  if (ex && ex.parentNode) ex.parentNode.removeChild(ex);
 }
 
 function flashAlerts() {
@@ -776,4 +1072,226 @@ document.addEventListener('keydown', (e) => {
 /* default unit */
 setUnit('metric');
 
-console.warn('Warning: API key is exposed in frontend JS. Consider moving API calls to a backend proxy to protect your key.');
+console.log('Using Open-Meteo for weather data — open source, no API key required.');
+
+// Add horizontal slider controls (left/right) for sections that scroll horizontally
+function addHorizontalSliderControls(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  // ensure relative positioning
+  const computed = window.getComputedStyle(container);
+  if (computed.position === 'static') container.style.position = 'relative';
+
+  const left = document.createElement('button');
+  left.className = 'slider-btn slider-left';
+  left.setAttribute('aria-label', 'Scroll left');
+  left.innerText = '‹';
+
+  const right = document.createElement('button');
+  right.className = 'slider-btn slider-right';
+  right.setAttribute('aria-label', 'Scroll right');
+  right.innerText = '›';
+
+  container.appendChild(left);
+  container.appendChild(right);
+
+  const scrollAmount = () => Math.round(container.clientWidth * 0.7);
+
+  left.addEventListener('click', () => container.scrollBy({ left: -scrollAmount(), behavior: 'smooth' }));
+  right.addEventListener('click', () => container.scrollBy({ left: scrollAmount(), behavior: 'smooth' }));
+
+  function updateVisibility() {
+    // show controls only when overflow exists
+    if (container.scrollWidth <= container.clientWidth + 2) {
+      left.style.display = 'none';
+      right.style.display = 'none';
+    } else {
+      left.style.display = 'flex';
+      right.style.display = 'flex';
+    }
+  }
+
+  updateVisibility();
+  // adjust on resize and on content changes
+  window.addEventListener('resize', updateVisibility);
+  const obs = new MutationObserver(() => updateVisibility());
+  obs.observe(container, { childList: true, subtree: true, attributes: true });
+}
+
+// initialize sliders for forecast and info sections
+addHorizontalSliderControls('forecastSection');
+addHorizontalSliderControls('infoGrid');
+
+/* Add this function to WEBS101.js, preferably near the end of the file */
+
+function setupHorizontalScrollbar() {
+  // Create horizontal scrollbar element
+  const scrollbar = document.createElement('div');
+  scrollbar.className = 'horizontal-scroll-indicator';
+  scrollbar.innerHTML = '<div class="horizontal-scroll-track"><div class="horizontal-scroll-thumb"></div></div>';
+  document.body.appendChild(scrollbar);
+  
+  const track = scrollbar.querySelector('.horizontal-scroll-track');
+  const thumb = scrollbar.querySelector('.horizontal-scroll-thumb');
+  const weatherMain = document.querySelector('.weather-main');
+  
+  // Check if vertical scrollbar is visible
+  function checkScrollbar() {
+    const hasVerticalScrollbar = weatherMain.scrollHeight > weatherMain.clientHeight;
+    
+    if (hasVerticalScrollbar) {
+      // Show horizontal scrollbar
+      scrollbar.style.display = 'block';
+      
+      // Update thumb position and size
+      const scrollWidth = weatherMain.scrollWidth;
+      const clientWidth = weatherMain.clientWidth;
+      const scrollLeft = weatherMain.scrollLeft;
+      
+      if (scrollWidth > clientWidth) {
+        // Calculate thumb width based on visible area
+        const thumbWidth = (clientWidth / scrollWidth) * track.clientWidth;
+        thumb.style.width = Math.max(thumbWidth, 40) + 'px';
+        
+        // Calculate thumb position
+        const maxScroll = scrollWidth - clientWidth;
+        const thumbPosition = (scrollLeft / maxScroll) * (track.clientWidth - thumbWidth);
+        thumb.style.left = thumbPosition + 'px';
+        
+        // Make weather-main horizontally scrollable
+        weatherMain.style.overflowX = 'auto';
+      } else {
+        // Hide thumb if no horizontal overflow
+        thumb.style.width = '0';
+        weatherMain.style.overflowX = 'hidden';
+      }
+    } else {
+      // Hide horizontal scrollbar entirely
+      scrollbar.style.display = 'none';
+      weatherMain.style.overflowX = 'hidden';
+    }
+  }
+  
+  // Update scrollbar on scroll
+  weatherMain.addEventListener('scroll', function() {
+    checkScrollbar();
+  });
+  
+  // Update scrollbar on resize
+  window.addEventListener('resize', checkScrollbar);
+  
+  // Drag functionality for the thumb
+  let isDragging = false;
+  let startX;
+  let startLeft;
+  
+  thumb.addEventListener('mousedown', function(e) {
+    isDragging = true;
+    startX = e.clientX;
+    startLeft = parseFloat(thumb.style.left) || 0;
+    e.preventDefault();
+  });
+  
+  document.addEventListener('mousemove', function(e) {
+    if (!isDragging) return;
+    
+    const deltaX = e.clientX - startX;
+    const trackWidth = track.clientWidth;
+    const thumbWidth = thumb.clientWidth;
+    const maxThumbLeft = trackWidth - thumbWidth;
+    
+    let newLeft = startLeft + deltaX;
+    newLeft = Math.max(0, Math.min(newLeft, maxThumbLeft));
+    
+    // Update thumb position
+    thumb.style.left = newLeft + 'px';
+    
+    // Update weather-main scroll position
+    const scrollWidth = weatherMain.scrollWidth;
+    const clientWidth = weatherMain.clientWidth;
+    const maxScroll = scrollWidth - clientWidth;
+    const scrollPercent = newLeft / (trackWidth - thumbWidth);
+    
+    weatherMain.scrollLeft = scrollPercent * maxScroll;
+  });
+  
+  document.addEventListener('mouseup', function() {
+    isDragging = false;
+  });
+  
+  // Click on track to jump
+  track.addEventListener('click', function(e) {
+    if (e.target === thumb) return;
+    
+    const trackRect = track.getBoundingClientRect();
+    const clickX = e.clientX - trackRect.left;
+    const thumbWidth = thumb.clientWidth;
+    const trackWidth = track.clientWidth;
+    
+    // Calculate new thumb center position
+    let newLeft = clickX - (thumbWidth / 2);
+    newLeft = Math.max(0, Math.min(newLeft, trackWidth - thumbWidth));
+    
+    // Update thumb
+    thumb.style.left = newLeft + 'px';
+    
+    // Update scroll
+    const scrollWidth = weatherMain.scrollWidth;
+    const clientWidth = weatherMain.clientWidth;
+    const maxScroll = scrollWidth - clientWidth;
+    const scrollPercent = newLeft / (trackWidth - thumbWidth);
+    
+    weatherMain.scrollLeft = scrollPercent * maxScroll;
+  });
+  
+  // Initial check
+  setTimeout(checkScrollbar, 100);
+  
+  // Check again after content loads
+  setTimeout(checkScrollbar, 500);
+}
+
+// Call the function after DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(setupHorizontalScrollbar, 100);
+});
+
+// Also call it after weather data is loaded
+// Add this at the end of renderWeather function, after all content is rendered:
+// setTimeout(setupHorizontalScrollbar, 100);
+// In revealMock function, update forecast mock data
+if (forecastGrid) {
+  forecastGrid.innerHTML = `
+    <div class="forecast-card-vertical">
+      <div class="forecast-day">Today</div>
+      <div class="forecast-icon">⛅</div>
+      <div class="forecast-temp-range">24° / 30°</div>
+      <div class="forecast-desc">Partly Cloudy</div>
+    </div>
+    <div class="forecast-card-vertical">
+      <div class="forecast-day">Sun</div>
+      <div class="forecast-icon">🌧️</div>
+      <div class="forecast-temp-range">23° / 28°</div>
+      <div class="forecast-desc">Light Rain</div>
+    </div>
+    <div class="forecast-card-vertical">
+      <div class="forecast-day">Mon</div>
+      <div class="forecast-icon">☀️</div>
+      <div class="forecast-temp-range">25° / 31°</div>
+      <div class="forecast-desc">Sunny</div>
+    </div>
+    <div class="forecast-card-vertical">
+      <div class="forecast-day">Tue</div>
+      <div class="forecast-icon">⛅</div>
+      <div class="forecast-temp-range">24° / 29°</div>
+      <div class="forecast-desc">Partly Cloudy</div>
+    </div>
+    <div class="forecast-card-vertical">
+      <div class="forecast-day">Wed</div>
+      <div class="forecast-icon">🌦️</div>
+      <div class="forecast-temp-range">22° / 27°</div>
+      <div class="forecast-desc">Showers</div>
+    </div>
+  `;
+  forecastGrid.className = 'forecast-vertical-grid';
+}
